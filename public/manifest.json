@@ -1,0 +1,21 @@
+{
+  "name": "Coda",
+  "short_name": "Coda",
+  "description": "Tu biblioteca personal y registro de lecturas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192.png?text=Coda",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512.png?text=Coda",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
