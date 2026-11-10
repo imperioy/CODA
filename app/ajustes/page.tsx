@@ -5,69 +5,12 @@ import { Download, Upload, Moon, Globe, Heart, CheckCircle2, AlertCircle, HardDr
 import { useBooks, Language } from '../context/BookContext'
 import Link from 'next/link'
 
-const translations = {
-  es: {
-    title: "Ajustes", subtitle: "Gestiona tus preferencias y la memoria de la aplicación.",
-    syncTitle: "Datos y Sincronización", syncDesc: "Tu biblioteca se guarda exclusivamente en tu dispositivo. Para pasarla al móvil, exporta los datos aquí y carga el archivo resultante en la aplicación de tu teléfono.",
-    export: "Exportar JSON", import: "Importar JSON", customTitle: "Personalización",
-    darkMode: "Modo Oscuro", language: "Idioma de la aplicación",
-    supportTitle: "Apoya este proyecto", supportDesc: "Esta aplicación es Open Source y gratuita para siempre. Si te resulta útil en tu día a día, puedes invitarme a un café para apoyar futuras actualizaciones.",
-    donate: "Hacer una donación", successExport: "Archivo JSON descargado correctamente.",
-    successImport: "Datos importados con éxito. Sincronizando...", errorExport: "Error al exportar los datos.", errorImport: "El archivo no es válido."
-  },
-  en: {
-    title: "Settings", subtitle: "Manage your preferences and application storage.",
-    syncTitle: "Data & Synchronization", syncDesc: "Your library is saved exclusively on your device. To move it to your phone, export the data here and load the resulting file into your phone's app.",
-    export: "Export JSON", import: "Import JSON", customTitle: "Customization",
-    darkMode: "Dark Mode", language: "App Language",
-    supportTitle: "Support this project", supportDesc: "This app is Open Source and free forever. If you find it useful, you can buy me a coffee to support future updates.",
-    donate: "Make a donation", successExport: "JSON file downloaded successfully.",
-    successImport: "Data imported successfully. Synchronizing...", errorExport: "Error exporting data.", errorImport: "The file is invalid."
-  },
-  fr: {
-    title: "Paramètres", subtitle: "Gérez vos préférences et le stockage de l'application.",
-    syncTitle: "Données et Synchronisation", syncDesc: "Votre bibliothèque est sauvegardée exclusivement sur cet appareil. Pour la transférer sur mobile, exportez les données ici et importez le fichier sur l'application de votre téléphone.",
-    export: "Exporter JSON", import: "Importer JSON", customTitle: "Personnalisation",
-    darkMode: "Mode Sombre", language: "Langue de l'application",
-    supportTitle: "Soutenez ce projet", supportDesc: "Cette application est Open Source et gratuite à vie. Si elle vous est utile, vous pouvez m'offrir un café pour soutenir les futures mises à jour.",
-    donate: "Faire un don", successExport: "Fichier JSON téléchargé avec succès.",
-    successImport: "Données importées. Synchronisation...", errorExport: "Erreur d'exportation.", errorImport: "Le fichier est invalide."
-  },
-  pt: {
-    title: "Configurações", subtitle: "Gerencie suas preferências e o armazenamento do aplicativo.",
-    syncTitle: "Dados e Sincronização", syncDesc: "Sua biblioteca é salva exclusivamente no seu dispositivo. Para passá-la para o celular, exporte os dados aqui e carregue o arquivo no app do seu telefone.",
-    export: "Exportar JSON", import: "Importar JSON", customTitle: "Personalização",
-    darkMode: "Modo Escuro", language: "Idioma do aplicativo",
-    supportTitle: "Apoie este projeto", supportDesc: "Este aplicativo é Open Source e gratuito para sempre. Se for útil no seu dia a dia, pague-me um café para apoiar futuras atualizações.",
-    donate: "Fazer uma doação", successExport: "Arquivo JSON baixado com sucesso.",
-    successImport: "Dados importados com sucesso. Sincronizando...", errorExport: "Erro ao exportar dados.", errorImport: "O arquivo é inválido."
-  },
-  de: {
-    title: "Einstellungen", subtitle: "Verwalten Sie Ihre Einstellungen und den App-Speicher.",
-    syncTitle: "Daten & Synchronisierung", syncDesc: "Ihre Bibliothek wird ausschließlich auf diesem Gerät gespeichert. Um sie auf Ihr Handy zu übertragen, exportieren Sie die Daten hier und laden Sie die Datei in der App auf Ihrem Telefon.",
-    export: "JSON Exportieren", import: "JSON Importieren", customTitle: "Personalisierung",
-    darkMode: "Dunkelmodus", language: "App-Sprache",
-    supportTitle: "Unterstütze dieses Projekt", supportDesc: "Diese App ist Open Source und für immer kostenlos. Wenn sie dir gefällt, kannst du mir einen Kaffee spendieren, um zukünftige Updates zu unterstützen.",
-    donate: "Spenden", successExport: "JSON-Datei erfolgreich heruntergeladen.",
-    successImport: "Daten erfolgreich importiert. Synchronisiere...", errorExport: "Fehler beim Exportieren.", errorImport: "Ungültige Datei."
-  },
-  it: {
-    title: "Impostazioni", subtitle: "Gestisci le tue preferenze e l'archiviazione dell'app.",
-    syncTitle: "Dati e Sincronizzazione", syncDesc: "La tua libreria viene salvata esclusivamente su questo dispositivo. Per trasferirla sul cellulare, esporta i dati qui e carica il file nell'app del tuo telefono.",
-    export: "Esporta JSON", import: "Importa JSON", customTitle: "Personalizzazione",
-    darkMode: "Modalità Scura", language: "Lingua dell'app",
-    supportTitle: "Sostieni questo progetto", supportDesc: "Questa app è Open Source e gratuita per sempre. Se ti è utile, puoi offrirmi un caffè per supportare gli aggiornamenti futuri.",
-    donate: "Fai una donazione", successExport: "File JSON scaricato con successo.",
-    successImport: "Dati importati con successo. Sincronizzazione...", errorExport: "Errore durante l'esportazione.", errorImport: "File non valido."
-  }
-}
-
 export default function Ajustes() {
-  const { books, theme, toggleTheme, language, changeLanguage } = useBooks()
+  const { books, theme, toggleTheme, language, changeLanguage, t } = useBooks()
   const [status, setStatus] = useState({ type: '', msg: '' })
   const fileInputRef = useRef<HTMLInputElement>(null)
   
-  const dict = translations[language] || translations.es
+  const dict = t.settings
 
   const handleExport = () => {
     try {
@@ -133,16 +76,16 @@ export default function Ajustes() {
       <section className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden transition-colors">
         <div className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center gap-2 bg-gray-50/50 dark:bg-neutral-900/50">
           <HardDrive size={18} className="text-amber-600 dark:text-amber-400" />
-          <h3 className="font-semibold text-gray-800 dark:text-gray-100">{dict.syncTitle}</h3>
+          <h3 className="font-semibold text-gray-800 dark:text-gray-100">{dict.dataSync}</h3>
         </div>
         <div className="p-5 space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{dict.syncDesc}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{dict.dataSyncDesc}</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <button onClick={handleExport} className="flex-1 flex items-center justify-center gap-2 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200 dark:border-amber-800/50 p-3 rounded-xl transition font-medium">
-              <Download size={20} /> {dict.export}
+              <Download size={20} /> {dict.exportJson}
             </button>
             <button onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 bg-white dark:bg-neutral-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-700 border border-gray-300 dark:border-neutral-700 p-3 rounded-xl transition font-medium">
-              <Upload size={20} /> {dict.import}
+              <Upload size={20} /> {dict.importJson}
             </button>
             <input type="file" accept=".json" ref={fileInputRef} onChange={handleImport} className="hidden" />
           </div>
@@ -152,7 +95,7 @@ export default function Ajustes() {
       <section className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden transition-colors">
         <div className="px-5 py-4 border-b border-gray-100 dark:border-neutral-800 flex items-center gap-2 bg-gray-50/50 dark:bg-neutral-900/50">
           <Moon size={18} className="text-purple-600 dark:text-purple-400" />
-          <h3 className="font-semibold text-gray-800 dark:text-gray-100">{dict.customTitle}</h3>
+          <h3 className="font-semibold text-gray-800 dark:text-gray-100">{dict.personalization}</h3>
         </div>
         <div className="p-0">
           <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-neutral-800">
@@ -187,7 +130,7 @@ export default function Ajustes() {
         <h3 className="font-bold text-lg mb-2">{dict.supportTitle}</h3>
         <p className="text-sm text-amber-100 mb-5 max-w-md mx-auto">{dict.supportDesc}</p>
         <a href="https://ko-fi.com/imperioy" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-amber-700 font-bold px-6 py-3 rounded-xl hover:bg-gray-50 transition shadow-sm w-full sm:w-auto">
-          <Heart size={18} className="fill-amber-700" /> {dict.donate}
+          <Heart size={18} className="fill-amber-700" /> {dict.donateBtn}
         </a>
       </section>
       

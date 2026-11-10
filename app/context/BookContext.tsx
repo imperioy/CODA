@@ -1,6 +1,44 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from 'react'
+import { translations, Language } from '@/lib/translations'
+
+export type { Language }
+
+export type WallStyle =
+  | 'ladrillo_clasico'
+  | 'ladrillo_vines'
+  | 'papel_vintage'
+  | 'listones_madera'
+  | 'hormigon'
+  | string;
+
+export type BookcaseStyle =
+  | 'oscura'
+  | 'blanco'
+  | 'metal'
+  | 'madera'
+  | 'clara'
+  | string;
+
+export type ShelfStyle =
+  | 'futurista'
+  | 'hexagonal'
+  | 'terror'
+  | 'gotico'
+  | 'noble'
+  | 'marmol'
+  | 'normal'
+  | 'lava'
+  | 'cosmos'
+  | 'dragon'
+  | string;
+
+export type Shelf = {
+  id: string;
+  name: string;
+  style: ShelfStyle;
+}
 
 export type Book = {
   id: string;
@@ -15,64 +53,106 @@ export type Book = {
   format?: 'Físico' | 'Audiolibro' | 'E-book';
   abandoned?: boolean;
   pageCount?: number;
+  shelfId?: string;
+  spineColor?: string;
+  spineFontSize?: number;
+  shelfOrder?: number;
 }
-
-export type Language = 'es' | 'en' | 'fr' | 'pt' | 'de' | 'it';
 
 type BookContextType = {
   books: Book[];
   addBook: (book: Book) => void;
   updateBook: (id: string, updatedBook: Partial<Book>) => void;
   removeBook: (id: string) => void;
+  shelves: Shelf[];
+  addShelf: (name: string, style: ShelfStyle) => void;
+  updateShelf: (id: string, updates: Partial<Shelf>) => void;
+  removeShelf: (id: string) => void;
+  wallStyle: WallStyle;
+  setWallStyle: (style: WallStyle) => void;
+  bookcaseStyle: BookcaseStyle;
+  setBookcaseStyle: (style: BookcaseStyle) => void;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
   language: Language;
   changeLanguage: (lang: Language) => void;
+  t: typeof translations['es']
+}
+
+export const sanitizeRating = (val?: number | null): number | undefined => {
+  if (val === undefined || val === null || isNaN(val)) return undefined
+  const clamped = Math.max(0, Math.min(10, val))
+  return Math.round(clamped * 100) / 100
 }
 
 const BookContext = createContext<BookContextType | undefined>(undefined)
 
 export function BookProvider({ children }: { children: React.ReactNode }) {
   const [books, setBooks] = useState<Book[]>([])
+  const [shelves, setShelves] = useState<Shelf[]>([])
+  const [wallStyle, setWallStyle] = useState<WallStyle>('ladrillo_clasico')
+  const [bookcaseStyle, setBookcaseStyle] = useState<BookcaseStyle>('oscura')
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [language, setLanguage] = useState<Language>('es')
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const savedBooks = localStorage.getItem('mis-libros-data')
-    if (savedBooks) setBooks(JSON.parse(savedBooks))
-    const savedTheme = localStorage.getItem('mis-libros-theme') as 'light' | 'dark'
-    if (savedTheme) setTheme(savedTheme)
-    const savedLang = localStorage.getItem('mis-libros-lang') as Language
-    if (savedLang) setLanguage(savedLang)
+    if (savedBooks) {
+      try {
+        const parsed: Book[] = JSON.parse(savedBooks)
+        setBooks(parsed.map(b => ({ ...b, rating: sanitizeRating(b.rating) })))
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    const savedShelves = localStorage.getItem('mis-libros-shelves'); if (savedShelves) setShelves(JSON.parse(savedShelves))
+    const savedWall = localStorage.getItem('mis-libros-wall') as WallStyle; if (savedWall) setWallStyle(savedWall)
+    const savedBookcase = localStorage.getItem('mis-libros-bookcase') as BookcaseStyle; if (savedBookcase) setBookcaseStyle(savedBookcase)
+    const savedTheme = localStorage.getItem('mis-libros-theme') as 'light' | 'dark'; if (savedTheme) setTheme(savedTheme)
+    const savedLang = localStorage.getItem('mis-libros-lang') as Language; if (savedLang) setLanguage(savedLang)
     setIsLoaded(true)
   }, [])
 
   useEffect(() => {
-    if (isLoaded) localStorage.setItem('mis-libros-data', JSON.stringify(books))
-  }, [books, isLoaded])
-
-  useEffect(() => {
     if (isLoaded) {
+      localStorage.setItem('mis-libros-data', JSON.stringify(books))
+      localStorage.setItem('mis-libros-shelves', JSON.stringify(shelves))
+      localStorage.setItem('mis-libros-wall', wallStyle)
+      localStorage.setItem('mis-libros-bookcase', bookcaseStyle)
       localStorage.setItem('mis-libros-theme', theme)
-      if (theme === 'dark') document.documentElement.classList.add('dark')
-      else document.documentElement.classList.remove('dark')
+      localStorage.setItem('mis-libros-lang', language)
     }
-  }, [theme, isLoaded])
+  }, [books, shelves, wallStyle, bookcaseStyle, theme, language, isLoaded])
 
-  useEffect(() => {
-    if (isLoaded) localStorage.setItem('mis-libros-lang', language)
-  }, [language, isLoaded])
-
-  const addBook = (book: Book) => setBooks(prev => [...prev, book])
-  const updateBook = (id: string, updatedBook: Partial<Book>) => setBooks(prev => prev.map(b => b.id === id ? { ...b, ...updatedBook } : b))
+  const addBook = (book: Book) => setBooks(prev => [...prev, { ...book, rating: sanitizeRating(book.rating) }])
+  const updateBook = (id: string, updatedBook: Partial<Book>) => setBooks(prev => prev.map(b => {
+    if (b.id !== id) return b
+    return {
+      ...b,
+      ...updatedBook,
+      ...(updatedBook.rating !== undefined ? { rating: sanitizeRating(updatedBook.rating) } : {})
+    }
+  }))
   const removeBook = (id: string) => setBooks(prev => prev.filter(b => b.id !== id))
+  
+  const addShelf = (name: string, style: ShelfStyle = 'normal') => {
+    const newShelf: Shelf = { id: Date.now().toString(), name, style }
+    setShelves(prev => [...prev, newShelf])
+  }
+  const updateShelf = (id: string, updates: Partial<Shelf>) => setShelves(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s))
+  const removeShelf = (id: string) => {
+    setShelves(prev => prev.filter(s => s.id !== id))
+    setBooks(prev => prev.map(b => b.shelfId === id ? { ...b, shelfId: undefined } : b))
+  }
   
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light')
   const changeLanguage = (lang: Language) => setLanguage(lang)
 
+  const t = translations[language] || translations.es
+
   return (
-    <BookContext.Provider value={{ books, addBook, updateBook, removeBook, theme, toggleTheme, language, changeLanguage }}>
+    <BookContext.Provider value={{ books, addBook, updateBook, removeBook, shelves, addShelf, updateShelf, removeShelf, wallStyle, setWallStyle, bookcaseStyle, setBookcaseStyle, theme, toggleTheme, language, changeLanguage, t }}>
       {children}
     </BookContext.Provider>
   )

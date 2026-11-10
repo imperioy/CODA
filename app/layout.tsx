@@ -4,24 +4,13 @@ import './globals.css'
 import { BookProvider, useBooks } from './context/BookContext'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookMarked, Clock, Settings, BookOpenText } from 'lucide-react'
+import { BookMarked, Clock, Settings, BookOpenText, Library } from 'lucide-react'
 import { useEffect } from 'react'
-
-const dict = {
-  es: { title: "Coda", lib: "Librería", pend: "Pendientes", set: "Ajustes" },
-  en: { title: "Coda", lib: "Library", pend: "Pending", set: "Settings" },
-  fr: { title: "Coda", lib: "Bibliothèque", pend: "À lire", set: "Paramètres" },
-  pt: { title: "Coda", lib: "Biblioteca", pend: "Pendentes", set: "Configurações" },
-  de: { title: "Coda", lib: "Bibliothek", pend: "Ausstehend", set: "Einstellungen" },
-  it: { title: "Coda", lib: "Libreria", pend: "In Coda", set: "Impostazioni" }
-}
 
 function NavigationContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { theme, language } = useBooks()
-  const t = dict[language] || dict.es
+  const { theme, t } = useBooks()
 
-  // Registra el Service Worker para la PWA
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(err => console.error(err))
@@ -38,10 +27,10 @@ function NavigationContent({ children }: { children: React.ReactNode }) {
             <div className="bg-amber-600 dark:bg-amber-500 text-white p-1.5 rounded-lg shadow-sm">
               <BookOpenText size={22} />
             </div>
-            <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">{t.title}</h1>
+            <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">{t.nav.appTitle}</h1>
           </div>
 
-          <Link href="/ajustes" className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition" title={t.set}>
+          <Link href="/ajustes" className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition" title={t.nav.settings}>
             <Settings size={22} />
           </Link>
         </div>
@@ -53,10 +42,16 @@ function NavigationContent({ children }: { children: React.ReactNode }) {
 
       <nav className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md border-t border-gray-200 dark:border-neutral-800 py-2 px-6 flex justify-around items-center z-30 transition-colors">
         <Link href="/" className={`flex flex-col items-center gap-1 text-xs font-medium transition ${pathname === '/' ? 'text-amber-600 dark:text-amber-500' : 'text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-gray-300'}`}>
-          <BookMarked size={22} /><span>{t.lib}</span>
+          <BookMarked size={22} /><span>{t.nav.library}</span>
         </Link>
+        
+        {/* NUEVO BOTÓN: ESTANTERÍAS */}
+        <Link href="/estanterias" className={`flex flex-col items-center gap-1 text-xs font-medium transition ${pathname.startsWith('/estanterias') ? 'text-amber-600 dark:text-amber-500' : 'text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-gray-300'}`}>
+          <Library size={22} /><span>{t.nav.shelves}</span>
+        </Link>
+
         <Link href="/pendientes" className={`flex flex-col items-center gap-1 text-xs font-medium transition ${pathname === '/pendientes' ? 'text-amber-600 dark:text-amber-500' : 'text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-gray-300'}`}>
-          <Clock size={22} /><span>{t.pend}</span>
+          <Clock size={22} /><span>{t.nav.pending}</span>
         </Link>
       </nav>
       
