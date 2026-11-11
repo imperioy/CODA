@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, Edit3, Settings2, X, Library, Paintbrush, Star, Calendar, RefreshCw, Search, ArrowDownUp } from 'lucide-react'
+import { Plus, Trash2, Edit3, Settings2, X, Library, Paintbrush, Star, Calendar, RefreshCw, Search, ArrowDownUp, ChevronUp, ChevronDown } from 'lucide-react'
 import { useBooks, Shelf, ShelfStyle, Book } from '../context/BookContext'
 import { WALL_STYLES, BOOKCASE_STYLES, SHELF_STYLES } from './styles'
 
@@ -153,7 +153,18 @@ function renderStars(rating?: number) {
 }
 
 export default function Estanterias() {
-  const { books, shelves, addShelf, removeShelf, updateShelf, updateBook, wallStyle, setWallStyle, bookcaseStyle, setBookcaseStyle, t } = useBooks()
+  const { books, shelves, setShelves, addShelf, removeShelf, updateShelf, updateBook, wallStyle, setWallStyle, bookcaseStyle, setBookcaseStyle, t } = useBooks()
+  
+  const moveShelf = (currentIndex: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    if (targetIndex < 0 || targetIndex >= shelves.length) return
+    const newShelves = [...shelves]
+    const temp = newShelves[currentIndex]
+    newShelves[currentIndex] = newShelves[targetIndex]
+    newShelves[targetIndex] = temp
+    setShelves(newShelves)
+    localStorage.setItem('mis-libros-shelves', JSON.stringify(newShelves))
+  }
   
   const [showRoomSettings, setShowRoomSettings] = useState(false)
   const [showNewShelf, setShowNewShelf] = useState(false)
@@ -353,6 +364,10 @@ export default function Estanterias() {
           </div>
         ) : (
           filteredShelves.map((shelf) => {
+            const currentIndex = shelves.findIndex(s => s.id === shelf.id);
+            const isFirst = currentIndex === 0;
+            const isLast = currentIndex === shelves.length - 1;
+
             const shelfBooks = myReadBooks
               .filter(b => b.shelfId === shelf.id)
               .sort((a, b) => ((a as any).shelfOrder ?? 9999) - ((b as any).shelfOrder ?? 9999));
@@ -373,6 +388,22 @@ export default function Estanterias() {
                   </div>
                   
                   <div className="flex items-center gap-1.5 opacity-90 hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-sm p-1 rounded-lg border border-white/10 shadow-sm">
+                    <button 
+                      onClick={() => moveShelf(currentIndex, 'up')} 
+                      disabled={isFirst}
+                      className={`p-1.5 rounded transition text-white ${isFirst ? 'opacity-30 pointer-events-none cursor-not-allowed bg-white/5' : 'bg-white/10 hover:bg-white/20'}`} 
+                      title={t.shelves.moveUpShelfTooltip}
+                    >
+                      <ChevronUp size={14} />
+                    </button>
+                    <button 
+                      onClick={() => moveShelf(currentIndex, 'down')} 
+                      disabled={isLast}
+                      className={`p-1.5 rounded transition text-white ${isLast ? 'opacity-30 pointer-events-none cursor-not-allowed bg-white/5' : 'bg-white/10 hover:bg-white/20'}`} 
+                      title={t.shelves.moveDownShelfTooltip}
+                    >
+                      <ChevronDown size={14} />
+                    </button>
                     <button onClick={() => setSortingShelf(shelf)} className="p-1.5 rounded transition bg-white/10 hover:bg-white/20 text-white" title={t.shelves.sortBooksTooltip}>
                       <ArrowDownUp size={14} />
                     </button>
