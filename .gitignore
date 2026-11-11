@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Exportación de Next.js y builds de Electron/Capacitor
+/out
+/dist
+/*.exe
+/*.apk
+
+# Archivos de Android Studio y Gradle
+.gradle
+/android/app/build/
+/android/.gradle/
+/android/build/
+/android/captures/
