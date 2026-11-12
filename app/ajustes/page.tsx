@@ -14,12 +14,18 @@ export default function Ajustes() {
 
   const handleExport = () => {
     try {
-      const dataStr = JSON.stringify(books, null, 2)
+      // Agrupamos el estado de libros y estanterías en un único objeto
+      const exportData = {
+        books: books,
+        estanterias: estanterias
+      }
+      
+      const dataStr = JSON.stringify(exportData, null, 2)
       const blob = new Blob([dataStr], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `mis-libros-backup-${new Date().toISOString().split('T')[0]}.json`
+      link.download = `Coda-backup-${new Date().toISOString().split('T')[0]}.json`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -40,11 +46,30 @@ export default function Ajustes() {
     reader.onload = (event) => {
       try {
         const importedData = JSON.parse(event.target?.result as string)
-        if (Array.isArray(importedData)) {
-          localStorage.setItem('mis-libros-data', JSON.stringify(importedData))
+        
+        // Comprobamos si es el nuevo formato (objeto con books y estanterias)
+        if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
+          
+          if (importedData.books) {
+            localStorage.setItem('Coda-data', JSON.stringify(importedData.books))
+          }
+          if (importedData.estanterias) {
+            // Asegúrate de que esta es la clave correcta que usas en el resto de tu app
+            // Si en otro sitio usas 'Coda-estanterias', pon esa en lugar de 'Coda-shelves'
+            localStorage.setItem('Coda-shelves', JSON.stringify(importedData.estanterias)) 
+          }
+          
           setStatus({ type: 'success', msg: dict.successImport })
           setTimeout(() => window.location.reload(), 1500)
-        } else throw new Error('Invalid format')
+          
+        // Retrocompatibilidad: por si intentas importar un backup antiguo (que solo era un Array de libros)
+        } else if (Array.isArray(importedData)) {
+          localStorage.setItem('Coda-data', JSON.stringify(importedData))
+          setStatus({ type: 'success', msg: dict.successImport })
+          setTimeout(() => window.location.reload(), 1500)
+        } else {
+          throw new Error('Invalid format')
+        }
       } catch (error) {
         setStatus({ type: 'error', msg: dict.errorImport })
         setTimeout(() => setStatus({ type: '', msg: '' }), 3000)
@@ -134,7 +159,7 @@ export default function Ajustes() {
         </a>
       </section>
       
-      <div className="text-center text-xs text-gray-400 pt-4 pb-8">Mis Libros v1.0.0</div>
+      <div className="text-center text-xs text-gray-400 pt-4 pb-8">Coda v1.0.0</div>
     </div>
   )
 }

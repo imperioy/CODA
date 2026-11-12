@@ -163,7 +163,7 @@ export default function Estanterias() {
     newShelves[currentIndex] = newShelves[targetIndex]
     newShelves[targetIndex] = temp
     setShelves(newShelves)
-    localStorage.setItem('mis-libros-shelves', JSON.stringify(newShelves))
+    localStorage.setItem('Coda-shelves', JSON.stringify(newShelves))
   }
   
   const [showRoomSettings, setShowRoomSettings] = useState(false)

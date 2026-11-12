@@ -98,7 +98,7 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    const savedBooks = localStorage.getItem('mis-libros-data')
+    const savedBooks = localStorage.getItem('Coda-data')
     if (savedBooks) {
       try {
         const parsed: Book[] = JSON.parse(savedBooks)
@@ -107,22 +107,22 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
         console.error(e)
       }
     }
-    const savedShelves = localStorage.getItem('mis-libros-shelves'); if (savedShelves) setShelves(JSON.parse(savedShelves))
-    const savedWall = localStorage.getItem('mis-libros-wall') as WallStyle; if (savedWall) setWallStyle(savedWall)
-    const savedBookcase = localStorage.getItem('mis-libros-bookcase') as BookcaseStyle; if (savedBookcase) setBookcaseStyle(savedBookcase)
-    const savedTheme = localStorage.getItem('mis-libros-theme') as 'light' | 'dark'; if (savedTheme) setTheme(savedTheme)
-    const savedLang = localStorage.getItem('mis-libros-lang') as Language; if (savedLang) setLanguage(savedLang)
+    const savedShelves = localStorage.getItem('Coda-shelves'); if (savedShelves) setShelves(JSON.parse(savedShelves))
+    const savedWall = localStorage.getItem('Coda-wall') as WallStyle; if (savedWall) setWallStyle(savedWall)
+    const savedBookcase = localStorage.getItem('Coda-bookcase') as BookcaseStyle; if (savedBookcase) setBookcaseStyle(savedBookcase)
+    const savedTheme = localStorage.getItem('Coda-theme') as 'light' | 'dark'; if (savedTheme) setTheme(savedTheme)
+    const savedLang = localStorage.getItem('Coda-lang') as Language; if (savedLang) setLanguage(savedLang)
     setIsLoaded(true)
   }, [])
 
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('mis-libros-data', JSON.stringify(books))
-      localStorage.setItem('mis-libros-shelves', JSON.stringify(shelves))
-      localStorage.setItem('mis-libros-wall', wallStyle)
-      localStorage.setItem('mis-libros-bookcase', bookcaseStyle)
-      localStorage.setItem('mis-libros-theme', theme)
-      localStorage.setItem('mis-libros-lang', language)
+      localStorage.setItem('Coda-data', JSON.stringify(books))
+      localStorage.setItem('Coda-shelves', JSON.stringify(shelves))
+      localStorage.setItem('Coda-wall', wallStyle)
+      localStorage.setItem('Coda-bookcase', bookcaseStyle)
+      localStorage.setItem('Coda-theme', theme)
+      localStorage.setItem('Coda-lang', language)
     }
   }, [books, shelves, wallStyle, bookcaseStyle, theme, language, isLoaded])
 
