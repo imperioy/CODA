@@ -94,7 +94,7 @@ export default function Libreria() {
     const info = apiBook.volumeInfo
     const newBook: Book = {
       id: apiBook.id, title: info.title, authors: info.authors || ['N/A'],
-      thumbnail: info.imageLinks?.thumbnail || 'https://via.placeholder.com/128x192?text=NA',
+      thumbnail: (info.imageLinks?.thumbnail || 'https://via.placeholder.com/128x192?text=NA').replace(/^http:\/\//i, 'https://'),
       status: status, pageCount: info.pageCount || 0 
     }
     if (!books.find(b => b.id === newBook.id)) addBook(newBook)
@@ -126,7 +126,7 @@ export default function Libreria() {
         <div className="absolute top-14 left-0 right-0 bg-white dark:bg-neutral-900 rounded-xl shadow-xl border border-gray-100 dark:border-neutral-800 p-2 space-y-2 z-40">
           {results.map((book) => (
             <div key={book.id} className="flex gap-3 items-center p-2 border-b dark:border-neutral-800 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded">
-              <img src={book.volumeInfo.imageLinks?.smallThumbnail || 'https://via.placeholder.com/40x60?text=NA'} alt="Cover" className="w-12 h-16 object-cover rounded shadow-sm" />
+              <img src={book.volumeInfo.imageLinks?.smallThumbnail?.replace(/^http:\/\//i, 'https://') || 'https://via.placeholder.com/40x60?text=NA'} alt="Cover" className="w-12 h-16 object-cover rounded shadow-sm" />
               <div className="flex-1">
                 <p className="font-semibold text-sm line-clamp-1 dark:text-white">{book.volumeInfo.title}</p>
                 <p className="text-xs text-gray-500 dark:text-neutral-400 line-clamp-1">{book.volumeInfo.authors?.join(', ')}</p>
@@ -198,7 +198,7 @@ export default function Libreria() {
             {sortedBooks.map((book) => (
               <div key={book.id} className="flex flex-col group cursor-pointer relative" onClick={() => setSelectedBook(book)}>
                 {book.abandoned && <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow">{lib.abandonedLabel}</span>}
-                <img src={book.thumbnail} alt={book.title} className={`w-full aspect-[2/3] object-cover rounded-lg shadow-md mb-3 group-hover:scale-105 transition duration-200 ${book.abandoned ? 'opacity-60 grayscale-[50%]' : ''}`} />
+                <img src={book.thumbnail?.replace(/^http:\/\//i, 'https://')} alt={book.title} className={`w-full aspect-[2/3] object-cover rounded-lg shadow-md mb-3 group-hover:scale-105 transition duration-200 ${book.abandoned ? 'opacity-60 grayscale-[50%]' : ''}`} />
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 line-clamp-1">{book.title}</p>
                 <p className="text-xs text-gray-500 dark:text-neutral-400 line-clamp-1 mb-1">{book.authors.join(', ')}</p>
                 <div className="flex justify-between items-center mt-1">
@@ -271,7 +271,7 @@ export default function Libreria() {
             <div className="flex justify-between items-start p-4 border-b dark:border-neutral-800">
               <div className="flex gap-4 min-w-0">
                 <img 
-                  src={selectedBook.thumbnail || 'https://via.placeholder.com/128x192?text=NA'} 
+                  src={selectedBook.thumbnail?.replace(/^http:\/\//i, 'https://') || 'https://via.placeholder.com/128x192?text=NA'} 
                   alt="Cover" 
                   className="w-16 h-24 object-cover rounded shadow shrink-0" 
                   onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/128x192?text=NA' }}

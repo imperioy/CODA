@@ -506,7 +506,7 @@ export default function Estanterias() {
             </button>
 
             <div className="space-y-4">
-              <img src={selectedBookDetail.thumbnail} alt="" className="w-32 h-48 object-cover rounded-xl shadow-lg mx-auto" />
+              <img src={selectedBookDetail.thumbnail?.replace(/^http:\/\//i, 'https://')} alt="" className="w-32 h-48 object-cover rounded-xl shadow-lg mx-auto" />
               <div>
                 <h3 className="font-bold text-2xl dark:text-white leading-tight">{selectedBookDetail.title}</h3>
                 <p className="text-md text-gray-500 dark:text-neutral-400 mt-1">{selectedBookDetail.authors?.join(', ')}</p>
@@ -663,7 +663,7 @@ export default function Estanterias() {
                   return (
                     <label key={book.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${isInThisShelf ? 'bg-amber-50 border-amber-600' : 'hover:bg-gray-50 border-gray-200 dark:border-neutral-800'}`}>
                       <input type="checkbox" className="w-5 h-5 rounded text-amber-600 accent-amber-600" checked={isInThisShelf} onChange={() => toggleBookInShelf(book.id, activeShelfForBooks.id)} />
-                      <img src={book.thumbnail} alt="" className="w-8 h-12 object-cover rounded shadow-sm" />
+                      <img src={book.thumbnail?.replace(/^http:\/\//i, 'https://')} alt="" className="w-8 h-12 object-cover rounded shadow-sm" />
                       <div className="flex-1">
                         <p className="text-sm font-semibold line-clamp-1 text-gray-800 dark:text-white">{book.title}</p>
                         <p className="text-xs text-gray-500 line-clamp-1">{book.authors?.join(', ')}</p>

@@ -6,7 +6,7 @@ import { useBooks, Language } from '../context/BookContext'
 import Link from 'next/link'
 
 export default function Ajustes() {
-  const { books, theme, toggleTheme, language, changeLanguage, t } = useBooks()
+  const { books, setBooks, theme, shelves, setShelves, toggleTheme, language, changeLanguage, t } = useBooks()
   const [status, setStatus] = useState({ type: '', msg: '' })
   const fileInputRef = useRef<HTMLInputElement>(null)
   
@@ -17,7 +17,7 @@ export default function Ajustes() {
       // Agrupamos el estado de libros y estanterías en un único objeto
       const exportData = {
         books: books,
-        estanterias: estanterias
+        estanterias: shelves
       }
       
       const dataStr = JSON.stringify(exportData, null, 2)
@@ -47,32 +47,35 @@ export default function Ajustes() {
       try {
         const importedData = JSON.parse(event.target?.result as string)
         
-        // Comprobamos si es el nuevo formato (objeto con books y estanterias)
+        // Comprobamos si es el nuevo formato (objeto con books y estanterias / shelves)
         if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
-          
           if (importedData.books) {
             localStorage.setItem('Coda-data', JSON.stringify(importedData.books))
+            setBooks(importedData.books)
           }
-          if (importedData.estanterias) {
-            // Asegúrate de que esta es la clave correcta que usas en el resto de tu app
-            // Si en otro sitio usas 'Coda-estanterias', pon esa en lugar de 'Coda-shelves'
-            localStorage.setItem('Coda-shelves', JSON.stringify(importedData.estanterias)) 
+          const importedShelves = importedData.estanterias || importedData.shelves
+          if (importedShelves) {
+            localStorage.setItem('Coda-shelves', JSON.stringify(importedShelves))
+            setShelves(importedShelves)
           }
           
           setStatus({ type: 'success', msg: dict.successImport })
-          setTimeout(() => window.location.reload(), 1500)
+          setTimeout(() => window.location.reload(), 2000)
           
         // Retrocompatibilidad: por si intentas importar un backup antiguo (que solo era un Array de libros)
         } else if (Array.isArray(importedData)) {
           localStorage.setItem('Coda-data', JSON.stringify(importedData))
+          setBooks(importedData)
           setStatus({ type: 'success', msg: dict.successImport })
-          setTimeout(() => window.location.reload(), 1500)
+          setTimeout(() => window.location.reload(), 2000)
         } else {
           throw new Error('Invalid format')
         }
       } catch (error) {
         setStatus({ type: 'error', msg: dict.errorImport })
         setTimeout(() => setStatus({ type: '', msg: '' }), 3000)
+      } finally {
+        if (fileInputRef.current) fileInputRef.current.value = ''
       }
     }
     reader.readAsText(file)

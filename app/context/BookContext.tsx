@@ -61,6 +61,7 @@ export type Book = {
 
 type BookContextType = {
   books: Book[];
+  setBooks: React.Dispatch<React.SetStateAction<Book[]>>;
   addBook: (book: Book) => void;
   updateBook: (id: string, updatedBook: Partial<Book>) => void;
   removeBook: (id: string) => void;
@@ -153,7 +154,7 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
   const t = translations[language] || translations.es
 
   return (
-    <BookContext.Provider value={{ books, addBook, updateBook, removeBook, shelves, setShelves, addShelf, updateShelf, removeShelf, wallStyle, setWallStyle, bookcaseStyle, setBookcaseStyle, theme, toggleTheme, language, changeLanguage, t }}>
+    <BookContext.Provider value={{ books, setBooks, addBook, updateBook, removeBook, shelves, setShelves, addShelf, updateShelf, removeShelf, wallStyle, setWallStyle, bookcaseStyle, setBookcaseStyle, theme, toggleTheme, language, changeLanguage, t }}>
       {children}
     </BookContext.Provider>
   )
